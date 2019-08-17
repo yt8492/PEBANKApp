@@ -3,13 +3,15 @@ package com.yt8492.pe_bankapp.di.module
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.yt8492.pe_bankapp.model.datasource.GameDataSource
+import com.yt8492.pe_bankapp.model.infra.repository.MockGameRepository
 import dagger.Module
 import dagger.Provides
 import java.util.*
 import javax.inject.Named
 
 @Module
-abstract class AppModule {
+class AppModule {
 
     @Provides
     fun provideSharedPreferences(context: Context): SharedPreferences {
@@ -27,6 +29,9 @@ abstract class AppModule {
             }
         }
     }
+
+    @Provides
+    fun provideGameDataSource(): GameDataSource = MockGameRepository
 
     companion object {
         private const val PREF_NAME = "PEBANK_APP"
