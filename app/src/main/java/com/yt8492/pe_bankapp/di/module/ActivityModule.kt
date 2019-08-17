@@ -8,7 +8,7 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class ActivityModule {
 
-    @ContributesAndroidInjector(modules = [MapActivityModule::class])
+    @ContributesAndroidInjector(modules = [MapActivityModule::class, MapModule::class])
     @ActivityScoped
     abstract fun mapActivity(): MapActivity
 }

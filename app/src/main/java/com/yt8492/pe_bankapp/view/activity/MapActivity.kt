@@ -11,18 +11,27 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
+import javax.inject.Named
 
 class MapActivity : AppCompatActivity(), HasSupportFragmentInjector {
 
     @Inject
     internal lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
+    @JvmField
+    @field:[Inject Named("Columns")]
+    var columns = 0
+
+    @JvmField
+    @field:[Inject Named("Rows")]
+    var rows = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
         AndroidInjection.inject(this)
 
-        val mapFragment = MapFragment.newInstance()
+        val mapFragment = MapFragment.newInstance(columns, rows)
         supportFragmentManager.commit {
             add(R.id.fragmentContainer, mapFragment)
         }
