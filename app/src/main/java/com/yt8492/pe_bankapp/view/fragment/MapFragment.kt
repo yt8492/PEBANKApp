@@ -101,7 +101,11 @@ class MapFragment : Fragment() {
             val x = (binding.mapTable[y] as ViewGroup).indexOfChild(it)
             it.setOnClickListener {
                 val cell = cells[x][y]
-                if (selectedCells.size < 12 && (previousSelectedCell == null || previousSelectedCell?.isNextTo(cell) == true)) {
+                if (selectedCells.size >= 12) {
+                    toast("これ以上セルを選択できません。")
+                } else if (previousSelectedCell?.isNextTo(cell) == false) {
+                    toast("直前に選択したセルに隣接していません。")
+                } else {
                     previousSelectedCell = cell
                     selectedCells.add(cell)
                     cell.color = Color.valueOf(1f, 0f, 0f, minOf(1f, cell.color.alpha() + 0.1f))
@@ -131,53 +135,75 @@ class MapFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel.state.observe(viewLifecycleOwner, Observer {
-            previousVisitedCell?.let { previousCell ->
-                (binding.mapTable[previousCell.y] as ViewGroup)[previousCell.x]
-                    .background = cells[previousCell.x][previousCell.y].color.toDrawable()
+            fun setCell(cell: com.yt8492.pe_bankapp.model.datamodel.Cell) {
+                previousVisitedCell?.let { previousCell ->
+                    (binding.mapTable[previousCell.y] as ViewGroup)[previousCell.x]
+                        .background = cells[previousCell.x][previousCell.y].color.toDrawable()
+                }
+                val currentCell = cells[cell.x][cell.y]
+                (binding.mapTable[currentCell.y] as ViewGroup)[currentCell.x]
+                    .background = Color.valueOf(0f, 0f, 1f, 0.2f).toDrawable()
+                previousVisitedCell = currentCell
             }
-            val currentCell = cells[it.cell.x][it.cell.y]
-            (binding.mapTable[currentCell.y] as ViewGroup)[currentCell.x]
-                .background = Color.valueOf(0f, 0f, 1f, 0.2f).toDrawable()
-            previousVisitedCell = currentCell
-            when(it) {
-                is Status.Flight -> {
-                    toast("何もありませんでした。")
-                }
-                is Status.Crash -> {
-                    toast("墜落しました。")
-                    previousSelectedCell = null
-                    selectedCells.clear()
-                    binding.mapTable.children.mapNotNull {
-                        (it as? TableRow)?.children
-                    }.flatten().forEach {
-                        it.background = ColorDrawable(Color.valueOf(0xFF000000).toArgb())
+            if (it is Status.GameFinished) {
+                toast(it.message)
+                resetGame()
+            } else {
+                when(it) {
+                    is Status.Flight -> {
+                        setCell(it.cell)
+                        toast("何もありませんでした。")
                     }
-                    cells.flatten().forEach {
-                        it.color = Color.valueOf(1f, 0f, 0f, 0f)
+                    is Status.Crash -> {
+                        setCell(it.cell)
+                        toast("墜落しました。")
                     }
-
-                }
-                is Status.FetchedKey -> {
-                    toast("鍵を入手しました。")
-                }
-                is Status.KeyOverflowed -> {
-                    val keys = it.ownKeys
-                    AlertDialog.Builder(requireContext())
-                        .setTitle("捨てる鍵を選んでください")
-                        .setItems(keys.map { "keyId: ${it.id}" }.toTypedArray()) { _, witch ->
-                            viewModel.deleteKey(keys[witch])
-                        }
-                        .create()
-                        .show()
-                }
-                is Status.FetchingTreasureSuccess -> {
-                    toast("お宝を入手しました。 ${it.treasure.name}")
-                }
-                is Status.FetchingTreasureFailure -> {
-                    toast("宝箱がありましたが合う鍵がありませんでした。")
+                    is Status.FetchedKey -> {
+                        setCell(it.cell)
+                        toast("鍵を入手しました。")
+                    }
+                    is Status.KeyOverflowed -> {
+                        setCell(it.cell)
+                        val keys = it.ownKeys
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("捨てる鍵を選んでください")
+                            .setItems(keys.map { "keyId: ${it.id}" }.toTypedArray()) { _, witch ->
+                                viewModel.deleteKey(keys[witch])
+                            }
+                            .create()
+                            .show()
+                    }
+                    is Status.FetchingTreasureSuccess -> {
+                        setCell(it.cell)
+                        toast("お宝を入手しました。 ${it.treasure.name}")
+                    }
+                    is Status.FetchingTreasureFailure -> {
+                        setCell(it.cell)
+                        toast("宝箱がありましたが合う鍵がありませんでした。")
+                    }
                 }
             }
         })
+
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { message ->
+            if (message != null) {
+                toast(message)
+            }
+        })
+    }
+
+    private fun resetGame() {
+        previousSelectedCell = null
+        selectedCells.clear()
+        binding.mapTable.children.mapNotNull {
+            (it as? TableRow)?.children
+        }.flatten().forEach {
+            it.background = ColorDrawable(Color.valueOf(0xFF000000).toArgb())
+        }
+        cells.flatten().forEach {
+            it.color = Color.valueOf(1f, 0f, 0f, 0f)
+        }
+        viewModel.finishGame()
     }
 
     override fun onAttach(context: Context) {

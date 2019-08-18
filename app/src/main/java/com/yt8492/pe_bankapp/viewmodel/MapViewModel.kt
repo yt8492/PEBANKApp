@@ -23,6 +23,10 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
 
     private var userWaiting = false
 
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?>
+        get() = _errorMessage
+
     fun registerRoute(cells: List<Cell>) {
         startSearch(cells)
     }
@@ -36,11 +40,12 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
                     is CellInfo.Crash -> {
                         _state.postValue(Status.Crash(cell))
                         keys.clear()
+                        _state.postValue(Status.GameFinished("墜落しました。"))
                         return@launch
                     }
                     is CellInfo.FetchingKey -> {
                         keys.add(cellInfo.key)
-                        if (keys.size < 3) {
+                        if (keys.size < 4) {
                             gameDataSource.postGotKeyInfo(cellInfo.key)
                             _state.postValue(Status.FetchedKey(cell, cellInfo.key))
                         } else {
@@ -63,6 +68,7 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
                 }
                 delay(5000)
             }
+            _state.postValue(Status.GameFinished("探索が終了しました。"))
         }
     }
 
@@ -74,5 +80,9 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
             gameDataSource.postGotKeyInfo(latestKey, removedKey)
             userWaiting = false
         }
+    }
+
+    fun finishGame() {
+        keys.clear()
     }
 }
