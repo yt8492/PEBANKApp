@@ -12,11 +12,11 @@ import kotlin.random.Random
 object MockGameRepository : GameDataSource {
     override suspend fun getCellInfo(cell: Cell): CellInfo {
         return withContext(Dispatchers.IO) {
-            when(Random.nextInt(10)) {
-                in 0..3 -> CellInfo.Flight
-                in 4..6 -> CellInfo.FetchingKey(listOf("1", "2").map { Key(it) }.random())
-                7, 8 -> CellInfo.FetchingTreasure(listOf("1", "2", "3").map { Key(it) }.random())
-                9 -> CellInfo.Crash
+            when(Random.nextInt(20)) {
+                in 0..8 -> CellInfo.Flight
+                in 9..14 -> CellInfo.FetchingKey(listOf("1" to "Δ", "2" to "Φ").map { Key(it.first, it.second) }.random())
+                in 15..18 -> CellInfo.FetchingTreasure(listOf("1" to "Δ", "2" to "Φ", "3" to "Ω").map { Key(it.first, it.second) }.random())
+                19 -> CellInfo.Crash
                 else -> throw IllegalArgumentException()
             }
         }

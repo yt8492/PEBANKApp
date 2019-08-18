@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TableLayout
 import android.widget.TableRow
 import androidx.appcompat.app.AlertDialog
@@ -22,6 +23,7 @@ import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.squareup.picasso.Picasso
 
 import com.yt8492.pe_bankapp.R
 import com.yt8492.pe_bankapp.databinding.FragmentMapBinding
@@ -160,14 +162,14 @@ class MapFragment : Fragment() {
                     }
                     is Status.FetchedKey -> {
                         setCell(it.cell)
-                        toast("鍵を入手しました。")
+                        toast("鍵${it.key.name}を入手しました。")
                     }
                     is Status.KeyOverflowed -> {
                         setCell(it.cell)
                         val keys = it.ownKeys
                         AlertDialog.Builder(requireContext())
                             .setTitle("捨てる鍵を選んでください")
-                            .setItems(keys.map { "keyId: ${it.id}" }.toTypedArray()) { _, witch ->
+                            .setItems(keys.map { "鍵${it.name}" }.toTypedArray()) { _, witch ->
                                 viewModel.deleteKey(keys[witch])
                             }
                             .create()
@@ -175,7 +177,20 @@ class MapFragment : Fragment() {
                     }
                     is Status.FetchingTreasureSuccess -> {
                         setCell(it.cell)
-                        toast("お宝を入手しました。 ${it.treasure.name}")
+                        val treasureImageView = ImageView(requireContext()).apply {
+                            Picasso.get()
+                                .load(it.treasure.imageUrl)
+                                .into(this)
+                        }
+                        AlertDialog.Builder(requireContext())
+                            .setTitle("お宝入手！")
+                            .setMessage("お宝: ${it.treasure.name}")
+                            .setView(treasureImageView)
+                            .setPositiveButton("OK") { _, _ ->
+                                viewModel.userWaiting = false
+                            }
+                            .create()
+                            .show()
                     }
                     is Status.FetchingTreasureFailure -> {
                         setCell(it.cell)

@@ -1,42 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-    <androidx.constraintlayout.widget.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+<layout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context=".view.fragment.MapFragment">
-
-        <Button
-                android:id="@+id/routeRegisterButton"
+            android:layout_height="match_parent">
+        <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ルート登録"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/back2"/>
 
-        <TableLayout
-                android:id="@+id/mapTable"
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:divider="@drawable/table_dividier"
-                android:stretchColumns="*"
-                android:showDividers="beginning|middle|end"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/routeRegisterButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/routeDeleteButton"/>
+                android:layout_height="match_parent"
+                tools:context=".view.fragment.MapFragment">
 
-        <Button
-                android:id="@+id/routeDeleteButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="ルート削除"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+            <Button
+                    android:id="@+id/routeRegisterButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ルート登録"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TableLayout
+                    android:id="@+id/mapTable"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:divider="@drawable/table_dividier"
+                    android:stretchColumns="*"
+                    android:showDividers="beginning|middle|end"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/routeRegisterButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/routeDeleteButton"/>
+
+            <Button
+                    android:id="@+id/routeDeleteButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ルート削除"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 </layout>
