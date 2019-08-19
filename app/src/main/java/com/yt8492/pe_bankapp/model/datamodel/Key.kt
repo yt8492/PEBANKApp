@@ -1,3 +1,3 @@
 package com.yt8492.pe_bankapp.model.datamodel
 
-data class Key(val id: String)
+data class Key(val id: String, val name: String)
