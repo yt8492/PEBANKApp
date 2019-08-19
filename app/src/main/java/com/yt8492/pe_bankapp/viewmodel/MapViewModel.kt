@@ -10,6 +10,7 @@ import com.yt8492.pe_bankapp.model.datamodel.Key
 import com.yt8492.pe_bankapp.model.datasource.GameDataSource
 import com.yt8492.pe_bankapp.model.state.Status
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -31,8 +32,10 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
         startSearch(cells)
     }
 
+    private var game: Job? = null
+
     fun startSearch(cells: List<Cell>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        game = viewModelScope.launch(Dispatchers.IO) {
             for (cell in cells) {
                 val cellInfo = gameDataSource.getCellInfo(cell)
                 when (cellInfo) {
@@ -62,6 +65,9 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
                             val treasure = gameDataSource.openTreasure(treasureKey)
                             userWaiting = true
                             _state.postValue(Status.FetchingTreasureSuccess(cell, treasure))
+                            while (userWaiting) {
+                                delay(500)
+                            }
                         } else {
                             _state.postValue(Status.FetchingTreasureFailure(cell))
                         }
@@ -85,5 +91,7 @@ class MapViewModel(private val gameDataSource: GameDataSource) : ViewModel() {
 
     fun finishGame() {
         keys.clear()
+        game?.cancel()
+        game = null
     }
 }

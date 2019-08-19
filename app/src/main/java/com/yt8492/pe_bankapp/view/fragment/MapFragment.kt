@@ -131,6 +131,7 @@ class MapFragment : Fragment() {
             cells.flatten().forEach {
                 it.color = Color.valueOf(1f, 0f, 0f, 0f)
             }
+            resetGame()
         }
     }
 

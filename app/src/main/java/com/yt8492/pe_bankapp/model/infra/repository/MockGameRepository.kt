@@ -13,9 +13,9 @@ object MockGameRepository : GameDataSource {
     override suspend fun getCellInfo(cell: Cell): CellInfo {
         return withContext(Dispatchers.IO) {
             when(Random.nextInt(20)) {
-                in 0..8 -> CellInfo.Flight
-                in 9..14 -> CellInfo.FetchingKey(listOf("1" to "Δ", "2" to "Φ").map { Key(it.first, it.second) }.random())
-                in 15..18 -> CellInfo.FetchingTreasure(listOf("1" to "Δ", "2" to "Φ", "3" to "Ω").map { Key(it.first, it.second) }.random())
+                in 0..5 -> CellInfo.Flight
+                in 6..12 -> CellInfo.FetchingKey(listOf("1" to "Δ", "2" to "Φ", "3" to "Ω").map { Key(it.first, it.second) }.random())
+                in 13..18 -> CellInfo.FetchingTreasure(listOf("1" to "Δ", "2" to "Φ", "3" to "Ω").map { Key(it.first, it.second) }.random())
                 19 -> CellInfo.Crash
                 else -> throw IllegalArgumentException()
             }
